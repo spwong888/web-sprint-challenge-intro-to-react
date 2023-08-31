@@ -1,55 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Character from './Character';
-import Planets from './Planets';
+import React, {useState, useEffect} from 'react'
+import axios from 'axios'
+import Character from './Character'
 
 function App() {
   const [characters, setCharacters] = useState([]);
   const [planets, setPlanets] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const [charactersResponse, planetsResponse] = await Promise.all([
-          axios.get('http://localhost:9009/api/people'),
-          axios.get('http://localhost:9009/api/planets')
-        ]);
+    axios.get('http://localhost:9009/api/people')
+      .then(response => {
+        setCharacters(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching characters:', error);
+      });
 
-        setCharacters(charactersResponse.data);
-        setPlanets(planetsResponse.data);
-
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    }
-
-    fetchData(
-    );
+    axios.get('http://localhost:9009/api/planets')
+      .then(response => {
+        setPlanets(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching planets:', error);
+      });
   }, []);
+
+  const combinedData = characters.map(character => {
+    const homeworld = planets.find(planet => planet.id === character.homeworld);
+    return {
+      ...character,
+      homeworld,
+    };
+  });
 
   return (
     <div className="App">
-      <h1>Star Wars Characters</h1>
-      {loading ? (
-        <p>Loading Characters...</p>
-      ) : (
-        <div className="character-list">
-          {characters.map(character => (
-            <Character
-              key={character.id}
-              character={character}
-              planets={planets}
-            />
-          ))}
-        </div>
-      )}
-      <Planets planets={planets} />
+      {combinedData.map(character => (
+        <Character key={character.id} character={character} />
+      ))}
     </div>
   );
 }
-
 
 export default App;
 

@@ -6,15 +6,10 @@ function Planets({ planets }) {
       <h2>Planets</h2>
       <ul>
         {planets.map(planet => (
-          <li key={planet.id}>
-            <strong>Name:</strong> {planet.name} <br />
-            <strong>Climate:</strong> {planet.climate} <br />
-            <strong>Population:</strong> {planet.population}
-          </li>
+          <li key={planet.id}>{planet.name}</li>
         ))}
       </ul>
     </div>
   );
 }
-
 export default Planets;
